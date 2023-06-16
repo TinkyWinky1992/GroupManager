@@ -1,0 +1,10 @@
+{
+    "bot_token": "5675114946:AAGfy90LSClBtSowlor4FS5gkc2l6Ne_s3I",
+    "api_id": "25137609",
+    "api_hash": "a1e92bdcaf64eac7698083ff1ac07532",
+    "broadcast_Channel_id": "1684837451",
+    "main_channel_id": "1806066046",
+    "show_users_command": "/show_users",
+    "ban_all_users_command": "/ban_all",
+    "ban_user_command": "/ban_user"
+}

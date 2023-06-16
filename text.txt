@@ -1,0 +1,65 @@
+from telethon import TelegramClient, events
+from telethon.tl.functions.channels import EditBannedRequest
+from telethon.sync import TelegramClient
+from telethon.tl.types import ChannelParticipantsBanned
+import help_func
+import asyncio
+import threading
+import Database
+
+class Bot:
+    def __init__(self, config):
+        
+        self.config_bot = config
+        self.client = TelegramClient("session", self.config_bot["api_id"], self.config_bot["api_hash"]).start(bot_token = self.config_bot["bot_token"])
+        self.broadcastChannel = config["broadcast_Channel_id"]
+        self.mainChannel = config["main_channel_id"]
+        self.server = Database.database()
+
+        @self.client.on(events.NewMessage(pattern='/start'))
+        async def help_event(event):
+            sender = await event.get_sender()
+            sender_id = sender.id
+            
+            showusers = self.config_bot["show_users_command"]
+            banall = self.config_bot["ban_all_users_command"]
+            banuser = self.config_bot["ban_user_command"]
+            
+            text_help = f"Commands:\n" \
+                "\"{showusers}'\" -> show every user in the channel.\n" \
+                "\"{banall}'\" -> ban every user in the channel.\n" \
+                "\"{banuser}'\" -> ban a user by their name."
+
+            text_help = text_help.format(**locals())
+                
+            await self.client.send_message(sender_id, text_help)
+
+
+        @self.client.on(events.NewMessage(pattern = self.config_bot["show_users_command"]))
+        async def show_users_event(event):
+            sender = await event.get_sender()
+            sender_id = sender.id
+            await self.client.send_message(sender_id, self.server.print_members())
+            
+            
+        @self.client.on(events.NewMessage(pattern=self.config_bot["ban_all_users_command"]))
+        async def ban_all_users(event):
+            sender = await event.get_sender()
+            sender_id = sender.id
+            participants = await help_func.create_member_to_list(self.client, self.broadcastChannel, self.mainChannel)
+    
+            for participant in participants:
+                await self.client(EditBannedRequest(self.broadcastChannel, participant.id, banned_rights=ChannelParticipantsBanned()))
+            #help_func.register_members_to_db(self.server, participants)  
+            await self.client.send_message(sender_id, self.server.print_members())  
+            
+            
+        @self.client.on(events.NewMessage(pattern = self.config_bot["ban_user_command"]))
+        async def ban_user_event(event):
+            pass
+            
+        
+  
+    def run(self):
+        asyncio.ensure_future(help_func.register_members_to_db(self.server, self.client, int(self.broadcastChannel), self.mainChannel)) 
+        self.client.run_until_disconnected()
