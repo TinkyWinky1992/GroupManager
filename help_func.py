@@ -38,7 +38,7 @@ async def Thread_creating_db(database, client, broadCastGroup, mainGroup):
         await asyncio.sleep(7200)
 
 
-async def is_exist(client, broadCastGroup, id):
+async def is_exist(client, broadCastGroup, id, mainChannel):
     async for member in client.iter_participants(broadCastGroup, aggressive=True):
         if id == member.id:
             return True
