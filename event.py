@@ -130,35 +130,19 @@ class Bot:
 
             if data.startswith("ban_user_"):
                 username = data.split("_")[2]
-                user = await self.client.get_entity(username)
-                if await help_func.is_exist(self.client, int(self.broadcastChannel), user.id):
-                    await self.client.kick_participant(int(self.broadcastChannel), user)
-                    self.server.remove_user(user.id)
-                    await self.client.send_message(sender_id, "User has been banned.")
+
+                try:
+                    user = await self.client.get_entity(username)
+
+                    if await help_func.is_exist(self.client, int(self.broadcastChannel), user.id):
+                        await self.client.kick_participant(int(self.broadcastChannel), user)
+                        self.server.remove_user(user.id)
+                        await self.client.send_message(sender_id, "User has been banned.")
+                    else:
+                        await self.client.send_message(sender_id, "User not found.")
+                except ValueError:
+                    await self.client.send_message(sender_id, "Invalid username.")
                     
-                else:
-                    await self.client.send_message(sender_id, "User not found.")
-
-                
-            
-            
-        @self.client.on(events.CallbackQuery())
-        async def handle_button_click(event):
-            sender = await event.get_sender()
-            sender_id = sender.id
-            data = event.data.decode()
-           
-            if data.startswith("ban_user_"):
-
-                username = int(data.split("_")[2])
-                if  await help_func.is_exist(self.client, int(self.broadcastChannel), username.id, self.mainChannel):
-                    await self.client.kick_participant(int(self.broadcastChannel), username)
-                    self.server.remove_user(username.id)
-                    await self.client.send_message(sender_id, "User has been banned.")
-                        
-                else:
-                    await self.client.send_message(sender_id, "User Not found.")
-                 
             elif data.startswith("cancel_ban_user_"): 
                 await self.client.send_message(sender_id, "Ban operation has been canceled.")
         

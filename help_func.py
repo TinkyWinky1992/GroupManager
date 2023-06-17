@@ -20,7 +20,7 @@ async def check_isMember_on_main(client, memberToCheck, mainChannel):
         
     return False
 
-@tasks.loop(hours= 2)
+@tasks.loop(seconds= 20)
 async def register_members_to_db(database, client, broadCastGroup, mainGroup):
         member_list = await create_member_to_list(client, broadCastGroup, mainGroup)
         database.delete_database()
