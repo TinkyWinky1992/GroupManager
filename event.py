@@ -131,7 +131,7 @@ class Bot:
             if data.startswith("ban_user_"):
                 username = data.split("_")[2]
                 user = await self.client.get_entity(username)
-                if await help_func.is_exist(self.client, int(self.broadcastChannel), user.id, self.mainChannel):
+                if await help_func.is_exist(self.client, int(self.broadcastChannel), user.id):
                     await self.client.kick_participant(int(self.broadcastChannel), user)
                     self.server.remove_user(user.id)
                     await self.client.send_message(sender_id, "User has been banned.")
