@@ -1,4 +1,5 @@
 import asyncio
+from discord.ext import tasks
 
 async def create_member_to_list(client, broadCastGroup, mainChannel):
     member_list = []
@@ -19,7 +20,7 @@ async def check_isMember_on_main(client, memberToCheck, mainChannel):
         
     return False
 
-
+@tasks.loop(seconds= 10)
 async def register_members_to_db(database, client, broadCastGroup, mainGroup):
         member_list = await create_member_to_list(client, broadCastGroup, mainGroup)
         database.delete_database()
@@ -28,14 +29,13 @@ async def register_members_to_db(database, client, broadCastGroup, mainGroup):
         for member in member_list:
             if not database.exists(member.id):
                 database.push(member.id, member.first_name, member.username)       
-        print("Created data")
+        
 
         
         
 async def Thread_creating_db(database, client, broadCastGroup, mainGroup):
-    while True:
-        await register_members_to_db(database, client, broadCastGroup, mainGroup)    
-        await asyncio.sleep(7200)
+        register_members_to_db.start(database, client, broadCastGroup, mainGroup)    
+       
 
 
 async def is_exist(client, broadCastGroup, id, mainChannel):
@@ -44,6 +44,19 @@ async def is_exist(client, broadCastGroup, id, mainChannel):
             return True
         
     return False
+
+def is_private_message(event):
+    if event.is_private:
+        return True
+    
+    else: 
+        return False
+    
+def is_admin(sender, admin):
+    if sender == admin:
+        return True
+    else:
+        return False
         
         
 

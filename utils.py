@@ -54,6 +54,7 @@ DEFAULT_CONFIG = {
     "show_users_command": "/show_users",
     "ban_all_users_command": "/ban_all",
     "ban_user_command": "/ban_user",
+    "admin_username": ""
     }
         
 Config = JsonFile("config", DEFAULT_CONFIG)
