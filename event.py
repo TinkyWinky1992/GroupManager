@@ -29,7 +29,7 @@ class Bot:
                     text_help = f"Commands:\n" \
                         "\"{showusers}'\" -> show every user in the channel.\n" \
                         "\"{banall}'\" -> ban every user in the channel.\n" \
-                        "\"{banuser}'\"-> ban a user by their username."
+                        "\"{banuser}'\" username -> ban a user by their username."
 
                     text_help = text_help.format(**locals())
                 
@@ -81,7 +81,10 @@ class Bot:
     
             if data == "ban_all_users":
                 list_of_users = self.server.getid_list()
-
+                if len(list_of_users) == 0:
+                    await self.client.send_message(sender_id, "Channel empty.")
+                    return
+                
                 for user in list_of_users:
                     user_to_remove = await self.client.get_input_entity(int(user))
                     await self.client.kick_participant(int(self.broadcastChannel), user_to_remove)
